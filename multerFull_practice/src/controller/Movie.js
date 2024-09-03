@@ -1,7 +1,6 @@
 const { Movie } = require('../model/Movie')
-// const fs = require('fs')
-// const path = require('path')
-
+const fs = require('fs')
+const path = require('path')
 
 // getMovie
 const getMovie = async (req, res) => {
@@ -10,7 +9,6 @@ const getMovie = async (req, res) => {
         movie: movie
     })
 }
-
 
 // create Movie
 const CreateMovie = async (req, res) => {
@@ -28,4 +26,28 @@ const CreateMovie = async (req, res) => {
     })
 }
 
-module.exports = { getMovie, CreateMovie }
+// Delete Movie
+const deleteMovie = async (req, res) => {
+    const id = req.params['id']
+    const movie = await Movie.findOne({ _id: id })
+
+    if (movie) {
+        const MovieImg = movie.MovieImg
+
+        const MovieImg_path = path.join(__dirname, '../uploads', MovieImg)
+
+        fs.unlinkSync(MovieImg_path)
+
+        await Movie.deleteOne({ _id: id })
+        res.json({
+            msg: "data removed"
+        })
+    } else {
+        res.json({
+            msg: "data not Fount"
+        })
+    }
+
+}
+
+module.exports = { getMovie, CreateMovie, deleteMovie }
